@@ -1,11 +1,10 @@
 'use client'
-import { useState, useEffect, useRef, Children } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea} from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChat } from "@ai-sdk/react"
 import {
@@ -16,12 +15,11 @@ import {
   ArrowDownCircleIcon
 } from "lucide-react"
 
-import { Scada } from "next/font/google";
 import HeroScetion from "@/components/HeroScetion";
 import PriceSection from "@/components/PriceSection";
 import KeyFeatures from "@/components/KeyFeatures";
 import CTA from "@/components/CTA";
-import { div, li, ul } from "framer-motion/client";
+
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);

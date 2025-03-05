@@ -1,7 +1,7 @@
 import { streamText, Message } from "ai";
 import {createGoogleGenerativeAI} from "@ai-sdk/google"
 import { messageStater } from "@/lib/data"
-import { Content } from "next/font/google";
+
 
 const google = createGoogleGenerativeAI({
  apiKey: process.env.Google_API_Key || ""
