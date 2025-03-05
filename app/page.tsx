@@ -184,7 +184,7 @@ export default function Home() {
                           }`}
                       >
                         <ReactMarkdown
-                          children={message.content}
+                          // children={message.content}
                           remarkPlugins={[remarkGfm]}
                           components={{
                             code: ({ inline,  children, ...props }) => {
@@ -205,7 +205,9 @@ export default function Home() {
                               <ol className="list-decimal ml-4">{children}</ol>
                             ),
                           }}
-                        />
+                        >
+                          {message.content}
+                        </ReactMarkdown>
                       </div>
                     </div>
                   ))}
