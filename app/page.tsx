@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ComponentProps } from "react";
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ export default function Home() {
     setIsChatOpen(!isChatOpen);
   }
 
-  const scrollRef =useRef<HTMLElement>(null);
+  const scrollRef =useRef<HTMLDivElement | null>(null);
 
   useEffect(()=>{
        if(scrollRef.current){
@@ -187,13 +187,13 @@ export default function Home() {
                           // children={message.content}
                           remarkPlugins={[remarkGfm]}
                           components={{
-                            code: ({ inline,  children, ...props }) => {
+                            code: ({ inline, children, ...props } : ComponentProps<"code"> & { inline?: boolean }) => {
                               return inline ? (
                                 <code {...props} className="bg-gray-200 px-1 rounded">
                                   {children}
                                 </code>
                               ) : (
-                                <pre {...props} className="bg-gray-200 px-1 rounded">
+                                <pre  {...(props as ComponentProps<"pre">)} className="bg-gray-200 px-1 rounded">
                                   <code>{children}</code>
                                 </pre>
                               );
@@ -264,3 +264,6 @@ export default function Home() {
     </main>
   );
 }
+
+
+
