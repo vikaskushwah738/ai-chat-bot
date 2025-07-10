@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect, useRef, ComponentProps } from "react";
 import { useChat } from "@ai-sdk/react"
 import ReactMarkdown from 'react-markdown'
@@ -15,16 +14,23 @@ import {
     Loader2,
     ArrowDownCircleIcon
 } from "lucide-react";
+import { generateId } from "@/lib/utils";
 
 const ChatWithAkhilaAI = () => {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [showChatIcons, setShowChatIcons] = useState(false);
-    const [hasWelcomed, setHasWelcomed] = useState(false);
+
+    const errorOccurredRef = useRef(false);
 
     const chatIconsRef = useRef<HTMLButtonElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const toggleChat = () => {
+        if (isChatOpen) {
+            // When closing chat, reset error states
+            errorOccurredRef.current = false;
+            stop();
+        }
         setIsChatOpen((prev) => !prev);
     };
 
@@ -38,25 +44,32 @@ const ChatWithAkhilaAI = () => {
         reload,
         error,
         append,
-    } = useChat({ api: "/api/chatbot" });
-
-    // Welcome message on first open
-    useEffect(() => {
-        if (isChatOpen && !hasWelcomed) {
-            const timeout = setTimeout(() => {
+    } = useChat({
+        api: "/api/chatbot",
+        onFinish: (message) => {
+            console.log("✅ Assistant reply received:", message);
+        },
+        onError: (error) => {
+            console.error("❌ Error while streaming:", error);
+            alert("Error: " + JSON.stringify(error, null, 2));
+            if (
+                !errorOccurredRef.current &&
+                !isLoading &&
+                !messages.some(m => m.content?.includes?.('Sorry, I encountered an error'))
+            ) {
+                errorOccurredRef.current = true;
                 append({
+                    id: generateId(),
                     role: 'assistant',
-                    content: 'Hello sir, welcome our BotVisionary',
+                    content: 'Sorry, I encountered an error. Please try again.'
                 });
-                setHasWelcomed(true);
-            }, 1500);
-
-            return () => clearTimeout(timeout);
+            }
         }
-    }, [isChatOpen, hasWelcomed, append]);
+    });
 
     // Auto-scroll on new messages
     useEffect(() => {
+        console.log("🧾 All messages updated:", messages);
         if (scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: 'smooth' });
         }
@@ -68,8 +81,6 @@ const ChatWithAkhilaAI = () => {
             if (window.scrollY > 200) {
                 setShowChatIcons(true);
             } else {
-                // setIsChatOpen(false);
-                // setShowChatIcons(false);
                 // Only hide icon and chat if chat is not manually opened
                 setShowChatIcons(false);
             }
@@ -79,10 +90,6 @@ const ChatWithAkhilaAI = () => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
-
-
-
-
 
     return (
         <>
@@ -187,9 +194,14 @@ const ChatWithAkhilaAI = () => {
                                             <button
                                                 className="underline"
                                                 type="button"
-                                                onClick={() => stop()}
+                                                onClick={() => {
+                                                    stop();
+                                                    errorOccurredRef.current = false;
+                                                }
+                                                }
                                             >
                                                 abort
+
                                             </button>
                                         </div>
                                     )}
@@ -201,7 +213,11 @@ const ChatWithAkhilaAI = () => {
                                             <button
                                                 className="underline"
                                                 type="button"
-                                                onClick={() => reload()}
+                                                onClick={() => {
+                                                    reload()
+                                                    errorOccurredRef.current = false;
+                                                }
+                                                }
                                             >
                                                 retry
                                             </button>
@@ -234,7 +250,7 @@ const ChatWithAkhilaAI = () => {
                         </Card>
                     </motion.div>
                 )}
-            </AnimatePresence>
+            </AnimatePresence >
         </>
     );
 };
