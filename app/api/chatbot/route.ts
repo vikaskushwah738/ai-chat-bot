@@ -12,7 +12,8 @@ export async function POST(req: Request) {
   try {
     // Validate request body
     const { messages }: { messages: CoreMessage[] } = await req.json()
-    console.log("🔴🔴Incoming messages:", messages);
+    //debug
+    // console.log("🔴🔴Incoming messages:", messages);
 
     if (!messages || !Array.isArray(messages)) {
       return new Response("Invalid messages format", { status: 400 })
@@ -20,7 +21,8 @@ export async function POST(req: Request) {
 
     // Validate environment variables
     if (!process.env.DEEPSEEK_BASE_URL || !process.env.DEEPSEEK_API_KEY) {
-      console.error("Missing DeepSeek configuration")
+      //debug
+      //  console.error("Missing DeepSeek configuration")
       return new Response("Server configuration error", { status: 500 })
     }
 
@@ -31,7 +33,7 @@ export async function POST(req: Request) {
         "You are a helpful AI assistant. Before providing an answer, think through your response and wrap your thinking process in <think> tags. Then provide your final answer after the closing </think> tag.",
     })
 
-    console.log("🔴🔴 streamText result initialized", result.toDataStreamResponse())
+    //console.log("🔴🔴 streamText result initialized", result.toDataStreamResponse())
 
     return result.toDataStreamResponse()
   } catch (error) {
